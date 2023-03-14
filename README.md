@@ -14,6 +14,10 @@ The second worksheet with Problems info:
 - getpass (optionally, you may type directly API user login and password)
 - openpyxl
 
+<strong>Important</strong><br>
+It is necessary to set itemFilter variable according to the monitoring item ('icmpping[,5]' or 'icmpping' or another one), for example by default:<br>
+<strong>itemFilter = {'key_': 'icmpping[,5]'}</strong>  
+
 <strong>How to use?</strong><br>
 Please enter hostgroup name as argument:<br>
 <strong>sla_report.py -G '<hostgroup_name>'</strong><br>
