@@ -16,8 +16,8 @@ The second worksheet with Problems info:
 
 <strong>How to use?</strong><br>
 Please enter hostgroup name as argument:<br>
-<strong><script.py> -G '<hostgroup_name>'</strong><br>
+<strong>sla_report.py -G '<hostgroup_name>'</strong><br>
 or any number of hosts divided by comma:<br>
-<strong><script.py> -H '<host_name>,<host_name>,<host_name>'</strong>
+<strong>sla_report.py -H '<host_name>,<host_name>,<host_name>'</strong>
 
 Have a nice day.
