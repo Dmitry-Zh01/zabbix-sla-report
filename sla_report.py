@@ -16,11 +16,6 @@ from openpyxl.utils import get_column_letter
 from openpyxl.styles import Font
 from openpyxl.utils.cell import column_index_from_string
 from openpyxl.styles import (PatternFill, Border, Side, Alignment, Font, GradientFill, colors, Color)
-from openpyxl.chart import (
-    LineChart,
-    Reference,
-)
-from openpyxl.chart.axis import DateAxis
 
 if '-G' not in sys.argv and '-H' not in sys.argv:
     print("Please enter hostgroup name as argument: <script.py> -G '<hostgroup>' or hosts divided by comma: <script.py> -H '<host>,<host>,<host>'")
