@@ -18,7 +18,7 @@ from openpyxl.utils.cell import column_index_from_string
 from openpyxl.styles import (PatternFill, Border, Side, Alignment, Font, GradientFill, colors, Color)
 
 if '-G' not in sys.argv and '-H' not in sys.argv:
-    print("Please enter hostgroup name as argument: <script.py> -G '<hostgroup>' or hosts divided by comma: <script.py> -H '<host>,<host>,<host>'")
+    print("Please enter hostgroup name as argument: <script.py> -G '<hostgroup>' or hosts divided by comma: <script.py> -H '<host>,<host>,<host>' and item filter key <script.py> -K <filter>, for example: 'icmpping' or 'icmpping[,5]'")
     sys.exit()
 
 if '-G' in sys.argv:
@@ -35,6 +35,11 @@ if '-H' in sys.argv:
         words = host_name.split(',')
         wordCount = len(words)
         hostCount = wordCount
+        
+if '-K' in sys.argv:
+    key_index = sys.argv.index('-K')+1
+    if key_index < len(sys.argv):
+        key_name = sys.argv[key_index]
 
 # Input for Zabbix API, Username and Password, timeFrom, timeTill
 apiPath = input(f"Set Zabbix API address please:\n")
@@ -47,7 +52,10 @@ apiPassword = getpass.getpass("Type Zabbix API user password please: ")
 #apiPassword = "-----------"
 
 ### IMPORTANT! ZABBIX ITEM FILTER, for example: 'icmpping[,5]' or 'icmpping'
-itemFilter = {'key_': 'icmpping[,5]'}  
+if '-K' in sys.argv:
+    itemFilter = f"{{'key_': '{key_name}'}}"
+else:
+    itemFilter = {'key_': 'icmpping'}
 
 # Auth
 try:
@@ -141,7 +149,16 @@ for x in data:
 
 # SLA
 ## !!! HERE WE USE itemFilter VARIABLE, this data set at the head of script
-            items = zabbixApi.item.get(filter=itemFilter, host=x['host'], output='extend', selectHosts=['host','name'])
+            if '-K' in sys.argv:
+                try:
+                    items = zabbixApi.item.get(filter=itemFilter, host=x['host'], output='extend', selectHosts=['host','name'])
+                except Exception:
+                    print(f"{host}: Unable to get items with selected item filter ('-K'). Try another key, for example: 'icmpping[,5]' or 'icmpping' or check that the item exists.")
+            else:
+                try:
+                    items = zabbixApi.item.get(filter=itemFilter, host=x['host'], output='extend', selectHosts=['host','name'])
+                except Exception:
+                    print(f"{host}: Unable to get items with default item filter 'icmpping'. Try another key or check that the item exists.")
             numList = list()
             sla = float()
 
@@ -194,7 +211,7 @@ for x in data:
         for item in items:
             values = zabbixApi.history.get(itemids=item['itemid'], output=['value'], time_from=fromTime, time_till = tillTime, history=item['value_type'])
             for historyValue in values:
-                val = int(historyValue['value'])
+                val = float(historyValue['value'])
                 numList.append(val) 
 
         try:
@@ -408,3 +425,5 @@ if '-G' in sys.argv:
     wb.save(f"sla_{host_group_name}.xlsx")
 elif '-H' in sys.argv:
     wb.save(f"sla_report.xlsx")
+
+print("Done")
